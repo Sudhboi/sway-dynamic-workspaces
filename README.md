@@ -32,3 +32,7 @@ bindgesture swipe:right exec echo right | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/
 ```
 
 Install `socat` through your repository's package manager if needed.
+
+## Credits
+
+IPC code stolen from [suyjuris/i3ipc-simple](https://github.com/suyjuris/i3ipc-simple). (TYSM!)
