@@ -14,15 +14,29 @@ Flake Coming Soon!
 
 Clone this repository and run the following:
 
+#### Automatic Installation
+
+The following command builds the program and moves it to `/usr/local/bin`, with `sudo`.
+
+```
+make install
+```
+
+#### Manual Installation
+
+Run the following command.
+
 ```
 make
 ```
 
-Move `./build/dynwork` to your PATH.
+Move `./build/dynwork` to your PATH, or add the build directory to PATH.
 
 ## Usage
 
-Add the following to your Sway Config:
+Depending on if you want to use the daemon or not, choose one of the following to add to your Sway config.
+
+### With Daemon (Recommended)
 
 ```
 exec dynwork daemon
@@ -31,7 +45,22 @@ bindgesture swipe:left exec echo left | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dy
 bindgesture swipe:right exec echo right | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
 ```
 
-Install `socat` through your repository's package manager if needed.
+Install `socat` through your distro's package manager if needed.
+
+### Standalone
+
+```
+bindgesture swipe:left exec dynwork left
+bindgesture swipe:right exec dynwork right
+```
+
+## Uninstall
+
+If installed automatically, run the following command to uninstall.
+
+```
+make uninstall
+```
 
 ## Credits
 

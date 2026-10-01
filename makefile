@@ -3,7 +3,9 @@ CC         := gcc
 CFLAGS     := -Wall -Wextra -O2 -MMD -MP
 SRC_DIR    := src
 BUILD_DIR  := build
-TARGET     := $(BUILD_DIR)/dynwork
+NAME       := dynwork
+TARGET     := $(BUILD_DIR)/$(NAME)
+INSTALL    := /usr/local/bin
 
 # 2. Automatically find sources and map them to the build directory
 SRCS       := $(wildcard $(SRC_DIR)/*.c)
@@ -28,6 +30,15 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 # 6. Include automatically generated dependency files (.d)
 -include $(DEPS)
 
-# 7. Clean up the build directory
+# Clean up the build directory
 clean:
 	rm -rf $(BUILD_DIR)
+
+# Build and move to /usr/local/bin
+install:
+	make
+	sudo cp $(TARGET) $(INSTALL)
+
+# Uninstall from /usr/local/bin
+uninstall:
+	sudo rm -f $(INSTALL)/$(NAME)
