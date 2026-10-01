@@ -1,1 +1,1 @@
-int dispatch(char const *cmd);
+int dispatch(char *cmd);

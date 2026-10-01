@@ -43,7 +43,6 @@ static void socket_path(struct sockaddr_un *addr) {
     dir = "/tmp";
   snprintf(addr->sun_path, sizeof(addr->sun_path), "%s/dynwork.sock", dir);
 }
-
 /* Reads newline-separated commands from the client, runs each and answers
  * with "ok" or "error: ..." per line. */
 static void handle_client(int fd) {
@@ -66,7 +65,7 @@ static void handle_client(int fd) {
         if (dispatch(line) == 0)
           dprintf(fd, "ok\n");
         else
-          dprintf(fd, "error: unknown command '%s'\n", line);
+          dprintf(fd, "error: bruh unknown command '%s'\n", line);
       }
       line = nl + 1;
     }
@@ -83,7 +82,7 @@ static void handle_client(int fd) {
     if (dispatch(buf) == 0)
       dprintf(fd, "ok\n");
     else
-      dprintf(fd, "error: unknown command '%s'\n", buf);
+      dprintf(fd, "error: nruh2 unknown command '%s'\n", buf);
   }
   close(fd);
 }

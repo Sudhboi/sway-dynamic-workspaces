@@ -69,15 +69,23 @@ static void move_left(void) {
     i3ipc_run_command_simple("workspace prev");
 }
 
+static void move(char *num) {
+  char cmd[64];
+  snprintf(cmd, sizeof(cmd), "workspace %s", num);
+  i3ipc_run_command_simple(cmd);
+  reorder();
+}
+
 /* Runs one command. Returns 0 on success, -1 if the command is unknown. */
-int dispatch(char const *cmd) {
-  /* Same mapping as dynwork.py: "left" runs move_right, "right" runs move_left
-   */
+int dispatch(char *cmd) {
+  char *ptr;
   if (strcmp(cmd, "left") == 0)
     move_right();
   else if (strcmp(cmd, "right") == 0)
     move_left();
-  else
+  else if ((ptr = strstr(cmd, "move_")) != NULL || strlen(cmd) > 5) {
+    move(ptr + 5);
+  } else
     return -1;
   return 0;
 }

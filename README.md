@@ -34,7 +34,7 @@ Move `./build/dynwork` to your PATH, or add the build directory to PATH.
 
 ## Usage
 
-Depending on if you want to use the daemon or not, choose one of the following to add to your Sway config.
+Depending on if you want to use the daemon or not, choose one of the following to add to your Sway config. The second set of commands also works if you use the daemon, and will go through the daemon if you do so.
 
 ### With Daemon (Recommended)
 
@@ -43,6 +43,17 @@ exec dynwork daemon
 
 bindgesture swipe:left exec echo left | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
 bindgesture swipe:right exec echo right | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+
+bindsym $mod+1 exec echo move_1 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+2 exec echo move_2 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+3 exec echo move_3 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+4 exec echo move_4 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+5 exec echo move_5 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+6 exec echo move_6 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+7 exec echo move_7 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+8 exec echo move_8 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+9 exec echo move_9 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
+bindsym $mod+0 exec echo move_10 | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/dynwork.sock
 ```
 
 Install `socat` through your distro's package manager if needed.
@@ -52,6 +63,17 @@ Install `socat` through your distro's package manager if needed.
 ```
 bindgesture swipe:left exec dynwork left
 bindgesture swipe:right exec dynwork right
+
+bindsym $mod+1 exec dynwork move_1
+bindsym $mod+2 exec dynwork move_2
+bindsym $mod+3 exec dynwork move_3
+bindsym $mod+4 exec dynwork move_4
+bindsym $mod+5 exec dynwork move_5
+bindsym $mod+6 exec dynwork move_6
+bindsym $mod+7 exec dynwork move_7
+bindsym $mod+8 exec dynwork move_8
+bindsym $mod+9 exec dynwork move_9
+bindsym $mod+0 exec dynwork move_10
 ```
 
 ## Uninstall
