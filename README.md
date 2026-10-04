@@ -38,6 +38,8 @@ Depending on if you want to use the daemon or not, choose one of the following t
 
 ### With Daemon (Recommended)
 
+The daemon also listens for sway workspace events and renumbers on its own, so gaps get closed even when workspaces change without going through dynwork (e.g. switching from an overview, closing the last window on a workspace, or `swaymsg workspace ...`).
+
 ```
 exec dynwork daemon
 

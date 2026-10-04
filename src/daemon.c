@@ -87,6 +87,21 @@ static void handle_client(int fd) {
   close(fd);
 }
 
+/* Consumes all pending sway events; we only care that something changed.
+ * Waits briefly for more so one action's burst (focus/empty/init) results in a
+ * single reorder. Returns -1 if the sway connection is gone. */
+static int drain_events(void) {
+  struct pollfd pfd = {.fd = i3ipc_event_fd(), .events = POLLIN};
+  while (poll(&pfd, 1, 30) > 0) {
+    I3ipc_message *msg; /* owned by the library */
+    if (i3ipc_message_receive_reorder_try(I3IPC_EVENT_ANY, &msg)) {
+      i3ipc_error_print("dynwork: lost sway IPC connection");
+      return -1;
+    }
+  }
+  return 0;
+}
+
 int run_daemon(void) {
   if (connect_sway())
     return 1;
@@ -119,16 +134,41 @@ int run_daemon(void) {
     return 1;
   }
 
+  /* Renumber whenever workspaces change behind our back (overview, closing
+   * the last window, plain `swaymsg workspace ...`). */
+  int events[] = {I3IPC_EVENT_WORKSPACE};
+  i3ipc_subscribe(events, 1);
+  if (i3ipc_error_code()) {
+    i3ipc_error_print("dynwork: subscribe failed");
+    return 1;
+  }
+  reorder();
+
   signal(SIGPIPE, SIG_IGN);
+  struct pollfd pfds[2] = {{.fd = srv, .events = POLLIN},
+                           {.fd = i3ipc_event_fd(), .events = POLLIN}};
   for (;;) {
-    int fd = accept(srv, NULL, NULL);
-    if (fd < 0) {
+    if (poll(pfds, 2, -1) < 0) {
       if (errno == EINTR)
         continue;
-      perror("accept");
+      perror("poll");
       return 1;
     }
-    handle_client(fd);
+    if (pfds[1].revents & (POLLIN | POLLHUP | POLLERR)) {
+      if (drain_events())
+        return 1;
+      reorder();
+    }
+    if (pfds[0].revents & POLLIN) {
+      int fd = accept(srv, NULL, NULL);
+      if (fd < 0) {
+        if (errno == EINTR)
+          continue;
+        perror("accept");
+        return 1;
+      }
+      handle_client(fd);
+    }
   }
 }
 

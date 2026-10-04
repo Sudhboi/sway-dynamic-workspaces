@@ -14,10 +14,17 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-static void reorder(void) {
+/* Renames the workspaces to 1..n in order. Workspaces that already have the
+ * right name are left alone, so running this again (e.g. in response to our own
+ * rename events) sends no commands. */
+void reorder(void) {
   I3ipc_reply_workspaces *ws = i3ipc_get_workspaces();
-  char cmd[512];
+  char cmd[512], want[16];
   for (int i = 0; i < ws->workspaces_size; ++i) {
+    int len = snprintf(want, sizeof(want), "%d", i + 1);
+    if (ws->workspaces[i].name_size == len &&
+        memcmp(ws->workspaces[i].name, want, len) == 0)
+      continue;
     snprintf(cmd, sizeof(cmd), "rename workspace \"%.*s\" to \"%d\"",
              ws->workspaces[i].name_size, ws->workspaces[i].name, i + 1);
     i3ipc_run_command_simple(cmd);
@@ -67,6 +74,7 @@ static void move_left(void) {
   reorder();
   if (get_focused_workspace() > 1)
     i3ipc_run_command_simple("workspace prev");
+  reorder();
 }
 
 static void move(char *num) {
@@ -83,9 +91,11 @@ int dispatch(char *cmd) {
     move_right();
   else if (strcmp(cmd, "right") == 0)
     move_left();
-  else if ((ptr = strstr(cmd, "move_")) != NULL || strlen(cmd) > 5) {
+  else if (strcmp(cmd, "reorder") == 0)
+    reorder();
+  else if ((ptr = strstr(cmd, "move_")) != NULL)
     move(ptr + 5);
-  } else
+  else
     return -1;
   return 0;
 }
